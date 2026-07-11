@@ -125,7 +125,11 @@ export default function Footer() {
           </span>
           <span>
             Projekt i wykonanie strony{" "}
-            <Link className="text-white" href="https://mgodlewskidev.pl/">
+            <Link
+              className="text-white"
+              href="https://mgodlewskidev.pl/"
+              target="_blank"
+            >
               mgodlewskidev.pl
             </Link>
           </span>
