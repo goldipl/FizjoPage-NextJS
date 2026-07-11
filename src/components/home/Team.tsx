@@ -59,14 +59,6 @@ export default function Team() {
                 </li>
               ))}
             </ul>
-
-            <a
-              href="#opinie"
-              className="inline-flex items-center gap-2 border border-gray-200 hover:border-primary-300 text-gray-700 font-semibold px-6 py-3 rounded-xl transition-colors"
-            >
-              Zobacz wszystkie opinie
-              <ArrowRight size={16} />
-            </a>
           </div>
 
           {/* Team grid */}
