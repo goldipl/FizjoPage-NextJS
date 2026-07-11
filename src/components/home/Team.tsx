@@ -1,39 +1,39 @@
-import Image from 'next/image'
-import { Sparkles, Clock, Timer, Wallet, ArrowRight } from 'lucide-react'
+import Image from "next/image";
+import { Sparkles, Clock, Timer, Wallet, ArrowRight } from "lucide-react";
+import IgaDrewinImg from "@/public/img/our-team/iga-drewin.jpg";
+import MarcinDrewinImg from "@/public/img/our-team/marcin-drewin.jpg";
+import NataliaKowalikImg from "@/public/img/our-team/natalia-kowalik.jpg";
+import PatrycjaSzczodraImg from "@/public/img/our-team/patrycja-szczodra.jpg";
 
 const highlights = [
-  { icon: Sparkles, label: 'Fachowe, indywidualne podejście' },
-  { icon: Clock, label: 'Dogodne godziny otwarcia' },
-  { icon: Timer, label: 'Krótkie terminy realizacji' },
-  { icon: Wallet, label: 'Przystępne ceny' },
-]
+  { icon: Sparkles, label: "Fachowe, indywidualne podejście" },
+  { icon: Clock, label: "Dogodne godziny otwarcia" },
+  { icon: Timer, label: "Krótkie terminy realizacji" },
+  { icon: Wallet, label: "Przystępne ceny" },
+];
 
 const team = [
   {
-    name: 'Izabela Augustyniak-Drewin',
-    role: 'Mgr Fizjoterapii',
-    image:
-      'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=80',
+    name: "Iga Augustyniak-Drewin",
+    role: "Mgr Fizjoterapii",
+    image: IgaDrewinImg,
   },
   {
-    name: 'Marcin Drewin',
-    role: 'Mgr fizjoterapii',
-    image:
-      'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80',
+    name: "Marcin Drewin",
+    role: "Mgr fizjoterapii",
+    image: MarcinDrewinImg,
   },
   {
-    name: 'Kinga Towarek',
-    role: 'rejestratorka medyczna',
-    image:
-      'https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?w=400&q=80',
+    name: "Natalia Kowalik",
+    role: "Mgr fizjoterapii",
+    image: NataliaKowalikImg,
   },
   {
-    name: 'Dr Wiesław Gólicki',
-    role: 'Specjalista ortopedii, traumatolog',
-    image:
-      'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&q=80',
+    name: "Patrycja Szczodra",
+    role: "Mgr fizjoterapii",
+    image: PatrycjaSzczodraImg,
   },
-]
+];
 
 export default function Team() {
   return (
@@ -104,5 +104,5 @@ export default function Team() {
         </div>
       </div>
     </section>
-  )
+  );
 }
