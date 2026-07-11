@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronDown, Menu, X } from "lucide-react";
+import logo from "@/public/img/logo/fizjomedica2.png";
 
 type NavLink = {
   label: string;
@@ -146,11 +147,11 @@ export default function Navbar() {
         {/* Logo */}
         <a href="#" className="flex items-center gap-2.5 shrink-0">
           <Image
-            src="/img/logo/fizjomedica2.png"
+            src={logo}
             alt="FizjoMedica Logo"
             width={200}
             height={64}
-            className="w-auto h-16 lg:h-auto object-contain"
+            className="h-16 lg:h-auto object-contain"
           />
         </a>
 
