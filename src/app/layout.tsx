@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: "FizjoMedica - Centrum Medyczne | Rehabilitacja i Fizjoterapia",
   description:
     "Profesjonalna rehabilitacja i fizjoterapia. Skuteczna pomoc w powrocie do zdrowia i pełnej sprawności.",
+  icons: {
+    icon: "/favicon.ico",
+  },
   robots: {
     index: false,
     follow: false,
