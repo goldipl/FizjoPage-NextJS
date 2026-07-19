@@ -218,6 +218,14 @@ export default function Navbar() {
           <MobileAccordion label="Usługi" links={uslugiLinks} />
 
           <a
+            href="/cennik"
+            className="block py-3.5 border-b border-gray-100 text-gray-700 font-medium"
+            onClick={() => setMobileOpen(false)}
+          >
+            Cennik
+          </a>
+
+          <a
             href="#kontakt"
             className="block py-3.5 border-b border-gray-100 text-gray-700 font-medium"
             onClick={() => setMobileOpen(false)}
