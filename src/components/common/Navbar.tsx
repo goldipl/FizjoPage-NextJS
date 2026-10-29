@@ -1,69 +1,39 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import { ChevronDown, Menu, X } from "lucide-react";
-import logo from "@/public/img/logo/fizjomedica2.png";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ChevronDown, Clock, Mail, Menu, Phone, X } from "lucide-react";
 
-type NavLink = {
-  label: string;
-  href: string;
-};
+import Logo from "./Logo";
+import { ctaLink, navData, type NavLink } from "@/src/data/navigation";
+import { siteConfig } from "@/src/data/site";
 
-type NavItem = {
-  label: string;
-  href?: string;
-  children?: NavLink[];
-  cta?: boolean;
-};
+function normalize(path: string) {
+  return path !== "/" && path.endsWith("/") ? path.slice(0, -1) : path;
+}
 
-const navData: NavItem[] = [
-  {
-    label: "Strona Główna",
-    href: "#",
-  },
-  {
-    label: "O Nas",
-    children: [
-      { label: "O Firmie", href: "#o-firmie" },
-      { label: "Nasza Kadra", href: "#kadra" },
-      { label: "Galeria", href: "#galeria" },
-      { label: "Opinie", href: "#opinie" },
-    ],
-  },
-  {
-    label: "Usługi",
-    children: [
-      { label: "Fizjoterapia", href: "#fizjoterapia" },
-      { label: "Rehabilitacja", href: "#rehabilitacja" },
-      { label: "Masaż Leczniczy", href: "#masaz" },
-      { label: "Terapia Manualna", href: "#terapia-manualna" },
-    ],
-  },
-  {
-    label: "Cennik",
-    href: "/cennik",
-  },
-  {
-    label: "Kontakt",
-    href: "#kontakt",
-  },
-];
+function useIsActive() {
+  const pathname = normalize(usePathname() ?? "/");
 
-const ctaLink = {
-  label: "Zarezerwuj Wizytę",
-  href: "#rezerwacja",
-};
+  return (href: string) =>
+    href === "/"
+      ? pathname === "/"
+      : pathname === href || pathname.startsWith(`${href}/`);
+}
 
 function DesktopDropdown({
   label,
+  href,
   links,
 }: {
   label: string;
+  href: string;
   links: NavLink[];
 }) {
   const [open, setOpen] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isActive = useIsActive();
 
   const enter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -77,9 +47,23 @@ function DesktopDropdown({
   };
 
   return (
-    <div className="relative" onMouseEnter={enter} onMouseLeave={leave}>
+    <div
+      className="relative"
+      onMouseEnter={enter}
+      onMouseLeave={leave}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") setOpen(false);
+      }}
+    >
       <button
-        className="flex items-center gap-1 text-[15px] font-medium text-gray-700 hover:text-primary-600 transition-colors py-2"
+        className={`flex items-center gap-1 text-[15px] font-medium transition-colors py-2 ${
+          isActive(href) ? "text-primary-600" : "text-gray-700 hover:text-primary-600"
+        }`}
+        aria-expanded={open}
+        aria-haspopup="true"
         onClick={() => setOpen(!open)}
       >
         {label}
@@ -90,21 +74,26 @@ function DesktopDropdown({
       </button>
 
       <div
-        className={`absolute left-1/2 -translate-x-1/2 top-full pt-3 w-56 transition ${
+        className={`absolute left-1/2 -translate-x-1/2 top-full pt-3 w-64 transition ${
           open
             ? "opacity-100 scale-100"
-            : "opacity-0 scale-95 pointer-events-none"
+            : "opacity-0 scale-95 pointer-events-none invisible"
         }`}
       >
         <div className="bg-white rounded-xl shadow-xl border py-2">
           {links.map((item) => (
-            <a
+            <Link
               key={item.label}
               href={item.href}
-              className="block px-5 py-2.5 text-sm text-gray-600 hover:bg-primary-50"
+              onClick={() => setOpen(false)}
+              className={`block px-5 py-2.5 text-sm hover:bg-primary-50 transition-colors ${
+                isActive(item.href) && item.href !== href
+                  ? "text-primary-600 font-medium"
+                  : "text-gray-600"
+              }`}
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </div>
       </div>
@@ -115,9 +104,11 @@ function DesktopDropdown({
 function MobileAccordion({
   label,
   links,
+  onNavigate,
 }: {
   label: string;
   links: NavLink[];
+  onNavigate: () => void;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -125,6 +116,7 @@ function MobileAccordion({
     <div className="border-b">
       <button
         className="w-full flex justify-between py-3.5 text-gray-700 font-medium"
+        aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
         {label}
@@ -137,18 +129,48 @@ function MobileAccordion({
 
       <div
         className={`overflow-hidden transition-all ${
-          open ? "max-h-60 pb-2" : "max-h-0"
+          open ? "max-h-[32rem] pb-2" : "max-h-0"
         }`}
       >
         {links.map((link) => (
-          <a
+          <Link
             key={link.label}
             href={link.href}
-            className="block py-2 pl-4 text-sm text-gray-500"
+            onClick={onNavigate}
+            className="block py-2 pl-4 text-sm text-gray-500 hover:text-primary-600"
           >
             {link.label}
-          </a>
+          </Link>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function TopBar() {
+  return (
+    <div className="hidden md:block bg-navy-950 text-primary-100/80 text-xs">
+      <div className="container-custom flex items-center justify-between h-9">
+        <div className="flex items-center gap-6">
+          <a
+            href={siteConfig.phoneHref}
+            className="flex items-center gap-1.5 hover:text-white transition-colors"
+          >
+            <Phone size={13} />
+            {siteConfig.phone}
+          </a>
+          <a
+            href={`mailto:${siteConfig.email}`}
+            className="flex items-center gap-1.5 hover:text-white transition-colors"
+          >
+            <Mail size={13} />
+            {siteConfig.email}
+          </a>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Clock size={13} />
+          Pon–Czw 8:00–20:00 · Pt 8:00–18:00 · Sob 9:00–14:00
+        </div>
       </div>
     </div>
   );
@@ -156,6 +178,8 @@ function MobileAccordion({
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const isActive = useIsActive();
+  const close = () => setMobileOpen(false);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
@@ -166,89 +190,103 @@ export default function Navbar() {
   }, [mobileOpen]);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b">
-      <div className="container-custom flex items-center justify-between h-20 !px-2">
-        <a href="#">
-          <Image
-            src={logo}
-            alt="FizjoMedica Logo"
-            width={200}
-            height={64}
-            className="h-16 object-contain"
-          />
-        </a>
+    <header className="sticky top-0 z-50">
+      <TopBar />
+      <div className="bg-white/95 backdrop-blur-sm border-b">
+        <div className="container-custom flex items-center justify-between h-20">
+          <Logo />
 
-        {/* Desktop */}
-        <nav className="hidden lg:flex items-center gap-8">
-          {navData.map((item) =>
-            item.children ? (
-              <DesktopDropdown
-                key={item.label}
-                label={item.label}
-                links={item.children}
-              />
-            ) : (
-              <a
-                key={item.label}
-                href={item.href}
-                className="text-[15px] font-medium text-gray-700 hover:text-primary-600"
-              >
-                {item.label}
-              </a>
-            ),
-          )}
-        </nav>
+          {/* Desktop */}
+          <nav className="hidden lg:flex items-center gap-7" aria-label="Menu główne">
+            {navData.map((item) =>
+              item.children ? (
+                <DesktopDropdown
+                  key={item.label}
+                  label={item.label}
+                  href={item.href}
+                  links={item.children}
+                />
+              ) : (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={`text-[15px] font-medium transition-colors ${
+                    isActive(item.href)
+                      ? "text-primary-600"
+                      : "text-gray-700 hover:text-primary-600"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ),
+            )}
+          </nav>
 
-        <div className="hidden lg:block">
-          <a
-            href={ctaLink.href}
-            className="bg-primary-600 text-white px-6 py-3 rounded-xl"
+          <div className="hidden lg:block">
+            <Link
+              href={ctaLink.href}
+              className="bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors shadow-lg shadow-primary-200"
+            >
+              {ctaLink.label}
+            </Link>
+          </div>
+
+          <button
+            className="lg:hidden p-2 text-navy-900"
+            aria-label={mobileOpen ? "Zamknij menu" : "Otwórz menu"}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen(!mobileOpen)}
           >
-            {ctaLink.label}
-          </a>
+            {mobileOpen ? <X size={26} /> : <Menu size={26} />}
+          </button>
         </div>
 
-        <button
-          className="lg:hidden p-2"
-          onClick={() => setMobileOpen(!mobileOpen)}
+        {/* Mobile */}
+        <div
+          className={`lg:hidden transition-all ${
+            mobileOpen
+              ? "max-h-[calc(100dvh-5rem)] overflow-y-auto"
+              : "max-h-0 overflow-hidden"
+          }`}
         >
-          {mobileOpen ? <X size={26} /> : <Menu size={26} />}
-        </button>
-      </div>
+          <nav className="container-custom pb-6" aria-label="Menu mobilne">
+            {navData.map((item) =>
+              item.children ? (
+                <MobileAccordion
+                  key={item.label}
+                  label={item.label}
+                  links={item.children}
+                  onNavigate={close}
+                />
+              ) : (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={`block py-3.5 border-b font-medium ${
+                    isActive(item.href) ? "text-primary-600" : "text-gray-700"
+                  }`}
+                  onClick={close}
+                >
+                  {item.label}
+                </Link>
+              ),
+            )}
 
-      {/* Mobile */}
-      <div
-        className={`lg:hidden overflow-hidden transition ${
-          mobileOpen ? "max-h-screen" : "max-h-0"
-        }`}
-      >
-        <div className="container-custom pb-4">
-          {navData.map((item) =>
-            item.children ? (
-              <MobileAccordion
-                key={item.label}
-                label={item.label}
-                links={item.children}
-              />
-            ) : (
-              <a
-                key={item.label}
-                href={item.href}
-                className="block py-3.5 border-b text-gray-700 font-medium"
-                onClick={() => setMobileOpen(false)}
-              >
-                {item.label}
-              </a>
-            ),
-          )}
-
-          <a
-            href={ctaLink.href}
-            className="block text-center mt-6 bg-primary-600 text-white py-3.5 rounded-xl"
-            onClick={() => setMobileOpen(false)}
-          >
-            {ctaLink.label}
-          </a>
+            <Link
+              href={ctaLink.href}
+              className="block text-center mt-6 bg-primary-600 text-white font-semibold py-3.5 rounded-xl"
+              onClick={close}
+            >
+              {ctaLink.label}
+            </Link>
+            <a
+              href={siteConfig.phoneHref}
+              className="flex items-center justify-center gap-2 mt-3 border border-gray-200 text-gray-700 font-semibold py-3.5 rounded-xl"
+            >
+              <Phone size={18} />
+              {siteConfig.phone}
+            </a>
+          </nav>
         </div>
       </div>
     </header>

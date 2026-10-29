@@ -28,7 +28,7 @@ content: [
         },
       },
       fontFamily: {
-        sans: ['Poppins', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-poppins)', 'Poppins', 'system-ui', 'sans-serif'],
       },
       maxWidth: {
         '8xl': '1440px',
