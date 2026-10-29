@@ -323,8 +323,8 @@ export default function BookingForm() {
         ))}
       </ol>
 
-      <div className="grid lg:grid-cols-[1fr_340px] gap-8 lg:gap-12">
-        <div>
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_340px] gap-8 lg:gap-12">
+        <div className="min-w-0">
           {/* Step 1: service */}
           {step === 0 && (
             <div>
