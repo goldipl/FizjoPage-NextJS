@@ -47,6 +47,50 @@ body {
   }
 }
 
+/* Hero slider: slow zoom on the active photo + headline fade-up. */
+.hero-slider .hero-zoom {
+  transform: scale(1);
+  transition: transform 7s ease-out;
+}
+
+.hero-slider .swiper-slide-active .hero-zoom {
+  transform: scale(1.08);
+}
+
+.hero-slider .hero-copy {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s ease 0.4s, transform 0.8s ease 0.4s;
+}
+
+.hero-slider .swiper-slide-active .hero-copy {
+  opacity: 1;
+  transform: none;
+}
+
+.hero-pagination .swiper-pagination-bullet {
+  width: 12px;
+  height: 12px;
+  margin: 0 !important;
+  border: 2px solid #fff;
+  background: transparent;
+  opacity: 1;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.hero-pagination .swiper-pagination-bullet-active {
+  background: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slider .hero-zoom,
+  .hero-slider .hero-copy {
+    transition: none;
+    transform: none;
+  }
+}
+
 /* Native <details> accordion: hide default marker. */
 summary::-webkit-details-marker {
   display: none;
