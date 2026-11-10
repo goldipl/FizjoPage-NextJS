@@ -179,20 +179,45 @@ function TopBar() {
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const isActive = useIsActive();
+  const pathname = usePathname();
   const close = () => setMobileOpen(false);
 
+  // Close whenever the route changes (covers back/forward navigation too).
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    setMobileOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    // Lock page scroll; html + body are both needed for iOS Safari.
+    const html = document.documentElement;
+    html.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMobileOpen(false);
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const onResize = () => desktop.matches && setMobileOpen(false);
+
+    window.addEventListener("keydown", onKey);
+    desktop.addEventListener("change", onResize);
 
     return () => {
+      html.style.overflow = "";
       document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+      desktop.removeEventListener("change", onResize);
     };
   }, [mobileOpen]);
 
   return (
     <header className="sticky top-0 z-50">
       <TopBar />
-      <div className="bg-white/95 backdrop-blur-sm border-b">
+      <div
+        className={`relative z-10 border-b transition-colors ${
+          mobileOpen ? "bg-white" : "bg-white/95 backdrop-blur-sm"
+        }`}
+      >
         <div className="container-custom flex items-center justify-between h-20">
           <Logo />
 
@@ -232,24 +257,36 @@ export default function Navbar() {
           </div>
 
           <button
-            className="lg:hidden p-2 text-navy-900"
+            className="lg:hidden -mr-2 p-2 rounded-lg text-navy-900 hover:bg-gray-100 transition-colors"
             aria-label={mobileOpen ? "Zamknij menu" : "Otwórz menu"}
             aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? <X size={26} /> : <Menu size={26} />}
           </button>
         </div>
+      </div>
 
-        {/* Mobile */}
+      {/* Mobile: overlays the page below the header instead of growing it. */}
+      <div
+        id="mobile-menu"
+        inert={!mobileOpen}
+        className={`lg:hidden absolute inset-x-0 top-full h-[calc(100dvh-5rem)] md:h-[calc(100dvh-7.25rem)] transition-[opacity,visibility] duration-300 ${
+          mobileOpen ? "visible opacity-100" : "invisible opacity-0"
+        }`}
+      >
         <div
-          className={`lg:hidden transition-all ${
-            mobileOpen
-              ? "max-h-[calc(100dvh-5rem)] overflow-y-auto"
-              : "max-h-0 overflow-hidden"
+          aria-hidden="true"
+          className="absolute inset-0 bg-navy-950/40 backdrop-blur-[2px]"
+          onClick={close}
+        />
+        <div
+          className={`relative max-h-full overflow-y-auto overscroll-contain bg-white shadow-xl shadow-navy-950/10 transition-transform duration-300 ${
+            mobileOpen ? "translate-y-0" : "-translate-y-3"
           }`}
         >
-          <nav className="container-custom pb-6" aria-label="Menu mobilne">
+          <nav className="container-custom pt-2 pb-6" aria-label="Menu mobilne">
             {navData.map((item) =>
               item.children ? (
                 <MobileAccordion
