@@ -190,10 +190,11 @@ export default function Navbar() {
   useEffect(() => {
     if (!mobileOpen) return;
 
-    // Lock page scroll; html + body are both needed for iOS Safari.
+    // Lock page scroll on <html> only. Also setting it on <body> turns body
+    // into its own scroll container, which detaches the sticky header from
+    // the viewport and throws it (and the menu) back to the top of the page.
     const html = document.documentElement;
     html.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
 
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMobileOpen(false);
     const desktop = window.matchMedia("(min-width: 1024px)");
@@ -204,7 +205,6 @@ export default function Navbar() {
 
     return () => {
       html.style.overflow = "";
-      document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
       desktop.removeEventListener("change", onResize);
     };

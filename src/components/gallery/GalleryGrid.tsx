@@ -39,11 +39,12 @@ export default function GalleryGrid() {
       if (event.key === "ArrowLeft") step(-1);
     };
 
-    document.body.style.overflow = "hidden";
+    // Lock on <html>: locking <body> breaks the sticky header (see Navbar).
+    document.documentElement.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
 
     return () => {
-      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
   }, [current, close, step]);
